@@ -123,6 +123,9 @@ class StubGenerator {
 class MockingjayGenerator {
   static identifier = 'com.luckymarmot.PawExtensions.MockingjayGenerator';
   static title = 'Swift Mockingjay';
+  static fileExtension = 'swift';
+  static languageHighlighter = 'swift';
+  static help = 'https://github.com/kylef-archive/Mockingjay';
 
   _generateStub(request) {
     const lastExchange = request.getLastExchange()
