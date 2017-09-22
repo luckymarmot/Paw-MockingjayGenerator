@@ -37,7 +37,27 @@ class StubGenerator {
       }
       return this._generateJsonBuilder()
     }
+    else if (this.httpExchange.responseBody.length > 0) {
+      return this._generateDataBuilder()
+    }
     return `http(${this.httpExchange.responseStatusCode})`
+  }
+
+  _generateDataBuilder() {
+    const responseHeaders = this.httpExchange.responseHeaders
+    const allowHeaders = ['Content-Type', 'Content-Language', 'Set-Cookie']
+    let headers = []
+    for (let headerName of Object.keys(responseHeaders)) {
+      if (allowHeaders.indexOf(headerName) >= 0) {
+        headers.push(`"${headerName}":"${responseHeaders[headerName]}"`)
+      }
+    }
+    const headerString = headers.length === 0 ? '[:]' : `[${headers.join(', ')}]`
+
+    const slug = this._getRequestSlug(this.request)
+    const dataVarName = `${slug}Data`
+    this.setupLines.push(`let ${dataVarName} = try! Data(contentsOf: Bundle.main.url(forResource: "${slug}", withExtension: "dat" /* set your file extension */)!)`)
+    return `http(${this.httpExchange.responseStatusCode}, headers: ${headerString}, download: Download.content(${dataVarName}))`
   }
 
   _generateLargeJsonBuilder() {
